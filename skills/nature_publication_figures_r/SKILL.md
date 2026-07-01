@@ -17,18 +17,22 @@ or a wrapped black box.
 - **Deliver a self-contained `.R` script.** It must run top to bottom on its own:
   load packages → load/define data → build the plot → run any stats → save. Put
   `source("theme_nature.R")` (adjust the path) near the top to pull in the helpers.
-- **Keep it flat and linear. Minimize complicated functions.** Prefer plain
-  ggplot2 + base R written out step by step. Do NOT wrap the figure logic in custom
-  functions, loops, or `apply`/`purrr` machinery unless the user asks. Avoid deep
-  pipe chains, metaprogramming (`!!`, `.data[[ ]]`, `do.call`), and niche packages.
-  One visible statement per step beats one clever line.
+- **Use the tidyverse by default.** Load it with `library(tidyverse)` and use its
+  verbs (`readr`, `dplyr`, `tidyr`, `ggplot2`, `forcats`) with the pipe (`|>` or
+  `%>%`) for readable, left-to-right data steps.
+- **Keep it flat and linear. Minimize complicated functions.** Write the steps out,
+  roughly one idea per line. Do NOT wrap the figure logic in custom functions,
+  loops, or `map`/`apply` machinery unless the user asks. Keep pipes short and
+  readable — break a long chain into a few named intermediate tibbles so each can be
+  inspected, rather than one giant expression. Avoid tidy-eval metaprogramming
+  (`!!`, `.data[[ ]]`), which is only needed inside functions we are not writing.
 - **Reuse, don't re-derive.** Use the bundled helpers (`theme_nature()`,
   `scale_color_nature()`/`scale_fill_nature()`, `nature_legend()`, `nature_size()`,
   `fdr_annotate()`, `save_nature_figure()`) instead of re-writing theme or export
   code inline. Assign the plot to a named object (e.g. `p`) so it can be reused,
   extended, and re-saved.
 - **Make it inspectable in RStudio.** After each meaningful step, leave the object
-  in the environment and show it: `head(df)`, `str(df)`, or `summary(fit)` on its
+  in the environment and show it: `glimpse(df)`, `head(df)`, or `summary(fit)` on its
   own line, and print the plot object (`p`) on its own line so it appears in the
   Plots pane. Never only pipe straight into `ggsave()` without a viewable `p`.
 - **Add light checks so problems surface early**, in plain readable form, e.g.
@@ -42,9 +46,11 @@ or a wrapped black box.
 ## Stack
 
 - Must use R plotting code.
+- Must prefer the tidyverse (`readr`, `dplyr`, `tidyr`, `ggplot2`, `forcats`) for
+  data import, wrangling, and plotting; load it with `library(tidyverse)`.
 - Must prefer ggplot2, built on the bundled `theme_nature()` in [theme_nature.R](theme_nature.R).
 - Use `patchwork` for multi-panel composition, `ggrepel` for direct labels,
-  `rstatix`/`broom` for tests, and `p.adjust(method = "BH")` for correction.
+  `rstatix`/`broom` for tidy test output, and `p.adjust(method = "BH")` for correction.
 - Consider raster layers (`ggrastr`, `annotation_raster`) only when content is
   intrinsically image-based (e.g. microscopy, heatmap of very large matrices).
 
@@ -135,9 +141,11 @@ or a wrapped black box.
 - When asked for a publication figure, consider whether a simpler chart form
   communicates the claim more clearly.
 - Always return the figure as a plain, runnable, well-commented `.R` script that
-  follows the "Output form" section above (flat structure, reused helpers, inline
-  inspection lines, section headers) so the user can open and step through it in
-  RStudio.
+  follows the "Output form" section above (tidyverse-first, flat structure, reused
+  helpers, inline inspection lines, section headers) so the user can open and step
+  through it in RStudio.
+- This skill is agent-agnostic: it works the same in Claude Code and in Codex
+  (via `AGENTS.md`). Keep all guidance in `SKILL.md` so both entry points stay in sync.
 - If no `theme_nature()`-based style function exists in the repo yet, offer to
   create/copy one (point to `theme_nature.R`) so it can be reused across figures.
 - When many categories or annotations compete for space, must solve readability

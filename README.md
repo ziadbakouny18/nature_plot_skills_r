@@ -40,7 +40,8 @@ skills/nature_publication_figures_r/
 
 ## Requirements
 
-- R with **ggplot2** (required) and **systemfonts** (for Arial registration).
+- R with the **tidyverse** (generated scripts use it by default) and **systemfonts**
+  (for Arial registration). `theme_nature.R` itself only needs **ggplot2**.
 - Optional, used by specific rules: `patchwork` (multi-panel), `ggrepel`
   (direct labels), `ggsignif`/`ggpubr` + `rstatix` (significance annotation),
   `ggrastr` (raster layers).
@@ -49,16 +50,37 @@ skills/nature_publication_figures_r/
 
 ## Usage
 
-### As a Claude Code / agent skill
+### In Claude Code
 
-Copy the skill into your agent's skills directory. For Claude Code:
+Copy the skill into your skills directory:
 
 ```bash
 cp -r skills/nature_publication_figures_r ~/.claude/skills/
 ```
 
-The skill then auto-loads by description; ask your agent for a "Nature-style"
-figure and it will apply the rules and source `theme_nature.R`.
+It then auto-loads by description; ask for a "Nature-style" figure and Claude
+applies the rules and sources `theme_nature.R`.
+
+### In Codex
+
+Codex reads `AGENTS.md` from your working directory. Two ways to wire it in:
+
+```bash
+# Option 1 — vendor this repo into your project; Codex reads its AGENTS.md
+git clone https://github.com/ziadbakouny18/nature_plot_skills_r vendor/nature_plot_skills_r
+```
+
+Then add one line to your project's own `AGENTS.md`:
+
+```markdown
+For Nature-style R figures, follow vendor/nature_plot_skills_r/AGENTS.md.
+```
+
+Option 2 — copy [`AGENTS.md`](AGENTS.md) and `skills/nature_publication_figures_r/`
+straight into your project and let Codex pick up `AGENTS.md` automatically.
+
+Either way, ask Codex for a "Nature-style" figure and it produces a tidyverse-based,
+inspectable `.R` script per the rules.
 
 ### Directly in R
 
