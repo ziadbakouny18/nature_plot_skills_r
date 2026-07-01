@@ -8,6 +8,37 @@ description: Use when generating or revising publication figures in R for a Natu
 Ported from the Python/Matplotlib/Seaborn version at
 https://github.com/fyng/nature_plot_skills. Same editorial rules, R idioms.
 
+## Output form (how every figure this skill produces must be written)
+
+The user runs the generated code in RStudio and needs to read, inspect, and reuse
+it. So the deliverable is always a plain, runnable **`.R` script**, not a snippet
+or a wrapped black box.
+
+- **Deliver a self-contained `.R` script.** It must run top to bottom on its own:
+  load packages → load/define data → build the plot → run any stats → save. Put
+  `source("theme_nature.R")` (adjust the path) near the top to pull in the helpers.
+- **Keep it flat and linear. Minimize complicated functions.** Prefer plain
+  ggplot2 + base R written out step by step. Do NOT wrap the figure logic in custom
+  functions, loops, or `apply`/`purrr` machinery unless the user asks. Avoid deep
+  pipe chains, metaprogramming (`!!`, `.data[[ ]]`, `do.call`), and niche packages.
+  One visible statement per step beats one clever line.
+- **Reuse, don't re-derive.** Use the bundled helpers (`theme_nature()`,
+  `scale_color_nature()`/`scale_fill_nature()`, `nature_legend()`, `nature_size()`,
+  `fdr_annotate()`, `save_nature_figure()`) instead of re-writing theme or export
+  code inline. Assign the plot to a named object (e.g. `p`) so it can be reused,
+  extended, and re-saved.
+- **Make it inspectable in RStudio.** After each meaningful step, leave the object
+  in the environment and show it: `head(df)`, `str(df)`, or `summary(fit)` on its
+  own line, and print the plot object (`p`) on its own line so it appears in the
+  Plots pane. Never only pipe straight into `ggsave()` without a viewable `p`.
+- **Add light checks so problems surface early**, in plain readable form, e.g.
+  `stopifnot(all(c("x", "y") %in% names(df)))` before plotting, and report the saved
+  file (`save_nature_figure()` already prints/returns the path).
+- **Label sections with `# ---- Packages ----`, `# ---- Data ----`, `# ---- Plot ----`,
+  `# ---- Stats ----`, `# ---- Export ----`** headers, so RStudio's document outline
+  lets the user jump around. Add a short plain-language comment above each block
+  saying what it does.
+
 ## Stack
 
 - Must use R plotting code.
@@ -103,6 +134,10 @@ https://github.com/fyng/nature_plot_skills. Same editorial rules, R idioms.
 
 - When asked for a publication figure, consider whether a simpler chart form
   communicates the claim more clearly.
+- Always return the figure as a plain, runnable, well-commented `.R` script that
+  follows the "Output form" section above (flat structure, reused helpers, inline
+  inspection lines, section headers) so the user can open and step through it in
+  RStudio.
 - If no `theme_nature()`-based style function exists in the repo yet, offer to
   create/copy one (point to `theme_nature.R`) so it can be reused across figures.
 - When many categories or annotations compete for space, must solve readability
